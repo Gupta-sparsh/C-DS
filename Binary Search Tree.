@@ -1,0 +1,246 @@
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct Node Node;
+struct Node {
+    int data;
+    Node *left,*right; 
+};
+void insert();
+void traverse();
+void delete();
+void preOrderTraversal(Node*);
+void inOrderTraversal(Node*);
+void postOrderTraversal(Node*);
+Node *root,*parent,*current,*temp;
+int main()
+{
+   printf("================Welcome to BST Program ======================$parsh==================================\n");
+   int choice;
+   while(1)
+   {
+       printf("\n\n");
+       printf("1. Insert Node\n");
+       printf("2. Traverse Node.\n");
+       printf("3. Delete Node. \n");
+       printf("Enter your choice.\n");
+       scanf("%d",&choice);
+       switch(choice)
+       {
+            case 1 :
+                    insert();
+                    break;
+            case 2 : 
+                    traverse();
+                    break;
+            case 3 :
+                    delete();
+                    break;
+            default :
+                    printf("Please Enter a valid choice.\n");
+                    printf("Enter 0 to exit.");
+                    break;
+            case 0 :
+                    exit (0);
+        }
+    }
+    return 0;
+}
+void insert()
+{
+    printf("Please enter data to be inserted : ");
+    int ele;
+    scanf("%d",&ele);
+    current = root;
+    if(current == NULL)                        // If root node is null 
+    {
+        root = (Node*)malloc(sizeof(Node));
+        root->data = ele;
+        root->left = NULL;
+        root->right = NULL;
+    }
+    else                                       //If root is not NULL 
+    {
+        while(current != NULL)                     // Traversing till the end of the TREE
+        {
+            parent = current;
+            if(current->data>ele)                           // If the integer is smaller than the current node.
+            {
+                current = current->left;
+            }
+            else if(current->data<ele)                      // If the integer is greater than the current node.
+            {
+                current = current->right;
+            }
+        }
+        temp = (Node*)malloc(sizeof(Node));                     //Allocating memory to a new node;
+        temp->data = ele;
+        temp->left = NULL;
+        temp->right = NULL;
+        if(parent->data>ele)
+        {
+            parent->left = temp;
+        }
+        else if(parent->data<ele)
+        {
+            parent->right = temp;
+        }
+    }
+    printf("Node inserted \n");
+}
+void traverse()
+{
+    printf("Please select the mode for traversal.\n");
+    printf("1. Preorder Traversal.\n");
+    printf("2. Inorder Traversal.\n");
+    printf("3. Postorder Traversal.\n");
+    int choice;
+    scanf("%d",&choice);
+    temp = root;
+    switch (choice)
+    {
+        case 1 : 
+                preOrderTraversal(root);
+                break;
+        case 2 : 
+                inOrderTraversal(root);
+                break;
+        case 3 :
+                postOrderTraversal(root);
+                break;
+    }
+}
+void delete()
+{
+    printf("Enter the data for the node to be deleted : ");
+    int ele;
+    scanf("%d",&ele);
+    current = root;
+    while(current->data != ele)                     // Traversing till we find the node to be deleted
+    {
+        parent = current;
+        if(current->data>ele)                           // If the integer is smaller than the current node.
+        {
+            current = current->left;
+        }
+        else if(current->data<ele)                      // If the integer is greater than the current node.
+        {
+            current = current->right;
+        }
+    }
+        if(current->left == NULL && current->right == NULL)    // Checking if the targeted node is (lEAf NoDE)
+        {
+            if(parent->left == current)
+            {
+                parent->left = NULL;
+                free(current);
+            }
+            else
+            {
+                parent->right = NULL;
+                free(current);
+            }
+        }
+        else if(current->left != NULL && current->right != NULL) // Checking for siblings of current ... (modification needed)] 
+        {
+            printf("Since the node opted for deletion has both child nodes.\n");
+            printf("Please select whether you want to replace the node to be deleted with its :\n");
+            printf("1. In Order successor. \n");
+            printf("2. In Order predessor.\n");
+            int choice;
+            scanf("%d",&choice);
+            
+            switch (choice)
+            {
+                case 1 :
+                        temp=current;
+                        while(temp->left !=NULL)
+                        {
+                            temp = temp->left;
+                        }
+                        if(parent->left == current)
+                        {
+                            parent->left=temp;
+                        }
+                        else if(parent->right == current)
+                        {
+                            parent->right = temp;
+                        }
+                        break;
+                case 2 :
+                        temp=current;
+                        while(temp->right !=NULL)
+                        {
+                            temp = temp->right;
+                        }
+                        if(parent->left == current)
+                        {
+                            parent->left=temp;
+                        }
+                        else if(parent->right == current)
+                        {
+                            parent->right = temp;
+                        }
+                        break;
+                default :
+                        return ;
+            }
+        }
+        else if(current->left != NULL ||  current->right != NULL) // Checking if  is the only Node of the parent.
+        {
+            if(parent->left == current)             ////////////////////
+            {
+                if(current->right == NULL)          //////
+                {
+                    temp = current->left;
+                    parent->left = temp;
+                    free(current);
+                }
+                else if(current->left == NULL)      //////
+                {
+                    temp = current->right;
+                    parent->left = temp;
+                    free(current);
+                }
+            }
+            else if(parent->right == current)       //////////////////////
+            {
+                if(current->right == NULL)          //////
+                {
+                    temp = current->left;
+                    parent->right = temp;
+                    free(current);
+                }
+                else if(current->left == NULL)      //////
+                {
+                    temp = current->right;
+                    parent->right = temp;
+                    free(current);
+                }
+            }
+        }
+}
+void preOrderTraversal(Node* temp1)
+{
+    if(temp1==NULL)
+    return;
+    printf("%d->",temp1->data);
+    preOrderTraversal(temp1->left);
+    preOrderTraversal(temp1->right);
+}
+void inOrderTraversal(Node* temp1)
+{
+    if(temp1==NULL)
+    return;
+    inOrderTraversal(temp1->left);
+    printf("%d",temp1->data);
+    inOrderTraversal(temp1->right);
+    
+}
+void postOrderTraversal(Node* temp1)
+{
+    if(temp1=NULL)
+    return;
+    postOrderTraversal(temp1->left);
+    postOrderTraversal(temp1->right);
+    printf("%d",temp->data);
+}
